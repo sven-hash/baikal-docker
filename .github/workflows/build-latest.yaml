@@ -21,27 +21,56 @@ jobs:
   parse_release_tag:
     runs-on: ubuntu-latest
     outputs:
-      ref: ${{ steps.parse-release-tag.outputs.REF_NAME }}
+      ref: ${{ steps.resolve-ref.outputs.REF_NAME }}
       baikal-version: ${{ steps.parse-release-tag.outputs.BAIKAL_VERSION }}
     steps:
-      - name: Parse release tag
+      - name: Resolve build reference
+        id: resolve-ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "release" ]; then
+            REF_NAME=$GITHUB_REF_NAME
+          elif [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            REF_NAME=$GITHUB_SHA
+          else
+            RELEASE_JSON="$RUNNER_TEMP/baikal-release.json"
+            HTTP_STATUS=$(curl --silent --show-error \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --output "$RELEASE_JSON" --write-out '%{http_code}' \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/latest")
+            case "$HTTP_STATUS" in
+              200)
+                REF_NAME=$(jq -er '.tag_name | select(type == "string" and length > 0 and . != "null")' "$RELEASE_JSON")
+                ;;
+              404)
+                echo "::notice::No published release found; building the triggering commit."
+                REF_NAME=$GITHUB_SHA
+                ;;
+              *)
+                echo "::error::Failed to look up the latest release (HTTP $HTTP_STATUS)."
+                exit 1
+                ;;
+            esac
+          fi
+          echo "Building reference $REF_NAME"
+          echo "REF_NAME=$REF_NAME" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.resolve-ref.outputs.REF_NAME }}
+          show-progress: false
+
+      - name: Read Baikal version
         id: parse-release-tag
         run: |
-          if [ "${{ github.event_name }}" == "release" ]
-          then
-            # Get the release version by stripping build metadata from the release name
-            echo Parsing tag from release ref $REF_NAME
-            REF_NAME=$GITHUB_REF_NAME
-          else
-            # Get the latest release version from the GitHub API
-            echo Parsing tag from latest release ref $REF_NAME
-            REF_NAME=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name')
+          BAIKAL_VERSION=$(sed -nE 's/^ENV VERSION[ =]+([^[:space:]]+).*$/\1/p' apache.dockerfile)
+          if [ -z "$BAIKAL_VERSION" ]; then
+            echo "::error::Cannot read the Baikal version from apache.dockerfile."
+            exit 1
           fi
-
-          BAIKAL_VERSION=${REF_NAME/+*/}
-          echo Parsed Baikal version $BAIKAL_VERSION from release $REF_NAME
-          echo REF_NAME=$REF_NAME >> "$GITHUB_OUTPUT"
-          echo BAIKAL_VERSION=$BAIKAL_VERSION >> "$GITHUB_OUTPUT"
+          echo "Parsed Baikal version $BAIKAL_VERSION from apache.dockerfile"
+          echo "BAIKAL_VERSION=$BAIKAL_VERSION" >> "$GITHUB_OUTPUT"
 
   test:
     name: ${{ matrix.dockerfile }}
@@ -69,6 +98,7 @@ jobs:
       ref: ${{ needs.parse_release_tag.outputs.ref }}
       dockerfile: apache.dockerfile
       image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
+      image-revision: ${{ needs.parse_release_tag.outputs.ref }}
       tags: |
         cgibin/baikal:apache
         cgibin/baikal:latest
