@@ -33,7 +33,5 @@ jobs:
       fail-fast: true
       matrix:
         dockerfile:
-          - apache
-          - apache-php8.3
           - nginx
           - nginx-php8.3

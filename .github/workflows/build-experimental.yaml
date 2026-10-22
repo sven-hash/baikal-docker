@@ -33,34 +33,8 @@ jobs:
       fail-fast: true
       matrix:
         dockerfile:
-          - apache
-          - apache-php8.3
           - nginx
           - nginx-php8.3
-
-  apache:
-    name: Apache
-    needs: test
-    uses: ./.github/workflows/build-job.yaml
-    with:
-      dockerfile: apache.dockerfile
-      image-version: experimental
-      tags: |
-        cgibin/baikal:experimental-apache
-        cgibin/baikal:experimental
-    secrets: inherit
-
-  apache_php83:
-    name: Apache (PHP 8.3)
-    needs: test
-    uses: ./.github/workflows/build-job.yaml
-    with:
-      dockerfile: apache-php8.3.dockerfile
-      image-version: experimental
-      tags: |
-        cgibin/baikal:experimental-apache-php8.3
-        cgibin/baikal:experimental-php8.3
-    secrets: inherit
 
   nginx:
     name: Nginx
@@ -71,7 +45,9 @@ jobs:
       # Sury PHP packages are unavailable for i386.
       platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
       image-version: experimental
-      tags: cgibin/baikal:experimental-nginx
+      tags: |
+        cgibin/baikal:experimental-nginx
+        cgibin/baikal:experimental
     secrets: inherit
 
   nginx_php83:
@@ -82,5 +58,7 @@ jobs:
       dockerfile: nginx-php8.3.dockerfile
       platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
       image-version: experimental
-      tags: cgibin/baikal:experimental-nginx-php8.3
+      tags: |
+        cgibin/baikal:experimental-nginx-php8.3
+        cgibin/baikal:experimental-php8.3
     secrets: inherit

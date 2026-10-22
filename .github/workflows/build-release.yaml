@@ -24,30 +24,6 @@ jobs:
         id: parse-release-tag
         run: echo BAIKAL_VERSION=${GITHUB_REF_NAME/+*/} >> "$GITHUB_OUTPUT"
 
-  apache:
-    name: Apache
-    needs: parse_release_tag
-    uses: ./.github/workflows/build-job.yaml
-    with:
-      dockerfile: apache.dockerfile
-      image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
-      tags: |
-        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-apache
-        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}
-    secrets: inherit
-
-  apache_php83:
-    name: Apache (PHP 8.3)
-    needs: parse_release_tag
-    uses: ./.github/workflows/build-job.yaml
-    with:
-      dockerfile: apache-php8.3.dockerfile
-      image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
-      tags: |
-        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-apache-php8.3
-        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-php8.3
-    secrets: inherit
-
   nginx:
     name: Nginx
     needs: parse_release_tag
@@ -57,7 +33,9 @@ jobs:
       # Sury PHP packages are unavailable for i386.
       platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
       image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
-      tags: cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-nginx
+      tags: |
+        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-nginx
+        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}
     secrets: inherit
 
   nginx_php83:
@@ -68,5 +46,7 @@ jobs:
       dockerfile: nginx-php8.3.dockerfile
       platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
       image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
-      tags: cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-nginx-php8.3
+      tags: |
+        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-nginx-php8.3
+        cgibin/baikal:${{ needs.parse_release_tag.outputs.baikal-version }}-php8.3
     secrets: inherit
