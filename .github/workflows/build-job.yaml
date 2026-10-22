@@ -10,6 +10,10 @@ on:
         description: Tags to apply to the image
         required: true
         type: string
+      platforms:
+        description: Target platforms supported by the image dependencies
+        default: linux/amd64,linux/arm/v7,linux/arm64/v8,linux/386
+        type: string
       image-version:
         description: Value for org.opencontainers.image.version label
         required: true
@@ -59,7 +63,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: ${{ inputs.dockerfile }}
-          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8,linux/386
+          platforms: ${{ inputs.platforms }}
           push: true
           tags: ${{ inputs.tags }}
           labels: |

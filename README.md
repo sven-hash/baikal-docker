@@ -19,6 +19,8 @@ I follow the same version naming scheme as [Baikal](http://sabre.io/baikal/) the
 
 The following tags support multiple architectures, e.g. `amd64`, `arm32v7`, `arm64v8` and `i386`.
 
+Current Nginx builds support `amd64`, `arm32v7`, and `arm64v8`. The PHP package repository does not provide i386 packages; Apache builds continue to include `i386`.
+
 - [`0.10.1`, `0.10.1-apache`](https://github.com/ckulka/baikal-docker/blob/0.10.1+hafix/apache.dockerfile)
 - [`0.10.1-apache-php8.2`, `0.10.1-php8.2`](https://github.com/ckulka/baikal-docker/blob/0.10.1+hafix/apache-php8.2.dockerfile)
 - [`0.10.1-nginx`](https://github.com/ckulka/baikal-docker/blob/0.10.1+hafix/nginx.dockerfile)
