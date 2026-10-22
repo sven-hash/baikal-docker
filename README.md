@@ -4,7 +4,7 @@
 
 This dockerfile provides a ready-to-go [Baikal server](http://sabre.io/baikal/).
 
-For more details, see [ckulka/baikal-docker (GitHub)](https://github.com/ckulka/baikal-docker).
+or more details, see [ckulka/baikal-docker (GitHub)](https://github.com/ckulka/baikal-docker).
 
 ## Supported tags and respective Dockerfile links
 
