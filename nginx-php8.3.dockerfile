@@ -7,7 +7,7 @@ ADD https://github.com/sabre-io/Baikal/releases/download/$VERSION/baikal-$VERSIO
 RUN apk add unzip && unzip -q baikal-$VERSION.zip
 
 # Final Docker image
-FROM nginx:1
+FROM nginx:1.31.8
 
 # Install dependencies: PHP (with libffi6 dependency) & SQLite3
 RUN curl -o /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg &&\

@@ -10,10 +10,11 @@ or more details, see [ckulka/baikal-docker (GitHub)](https://github.com/ckulka/b
 
 Tags without a version are [weekly re-builds](https://github.com/ckulka/baikal-docker/actions/workflows/build-latest.yaml) to include the latest base image with the most recent updates:
 
-- `latest` and `apache` are re-builds of the latest `*-apache` version
-- `apache-php8.2` are re-builds of the latest `*-apache-php8.2` version
-- `nginx` are re-builds of the latest `*-nginx` version
-- `nginx-php8.2` are re-builds of the latest `*-nginx-php8.2` version
+- `latest` and `nginx` use PHP 8.3 from [nginx.dockerfile](nginx.dockerfile)
+- `nginx-php8.3` uses [nginx-php8.3.dockerfile](nginx-php8.3.dockerfile)
+- `nginx-php8.4` uses [nginx-php8.4.dockerfile](nginx-php8.4.dockerfile)
+
+PHP 8.4 is also built as `experimental-nginx-php8.4` and `experimental-php8.4`, and as `<version>-nginx-php8.4` and `<version>-php8.4` for releases.
 
 I follow the same version naming scheme as [Baikal](http://sabre.io/baikal/) themselves.
 

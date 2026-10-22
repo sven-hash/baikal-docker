@@ -35,3 +35,4 @@ jobs:
         dockerfile:
           - nginx
           - nginx-php8.3
+          - nginx-php8.4

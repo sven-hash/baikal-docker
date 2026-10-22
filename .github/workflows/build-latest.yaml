@@ -85,6 +85,7 @@ jobs:
         dockerfile:
           - nginx
           - nginx-php8.3
+          - nginx-php8.4
 
   nginx:
     name: Nginx
@@ -117,4 +118,19 @@ jobs:
       image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
       image-revision: ${{ needs.parse_release_tag.outputs.ref }}
       tags: cgibin/baikal:nginx-php8.3
+    secrets: inherit
+
+  nginx_php84:
+    name: Nginx (PHP 8.4)
+    needs:
+      - parse_release_tag
+      - test
+    uses: ./.github/workflows/build-job.yaml
+    with:
+      ref: ${{ needs.parse_release_tag.outputs.ref }}
+      dockerfile: nginx-php8.4.dockerfile
+      platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
+      image-version: ${{ needs.parse_release_tag.outputs.baikal-version }}
+      image-revision: ${{ needs.parse_release_tag.outputs.ref }}
+      tags: cgibin/baikal:nginx-php8.4
     secrets: inherit
